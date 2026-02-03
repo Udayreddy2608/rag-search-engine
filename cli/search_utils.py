@@ -13,3 +13,4 @@ def load_stop_words() -> list:
         data = f.read()
         words = data.splitlines()
     return words
+
