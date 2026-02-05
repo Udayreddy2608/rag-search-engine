@@ -2,6 +2,7 @@ from search_utils import load_movies, load_stop_words
 import string
 from typing import List
 from nltk.stem import PorterStemmer
+from inverted_index import InvertedIndex
 
 class MovieSearchError(Exception):
     """Base exception for movie search errors."""
@@ -27,23 +28,26 @@ def token_matching(query_tokens: List[str], title: str, stop_words: list, stemme
 
 
 def search_movies_kw(query: str) -> List[str]:
-    try:
-        data = load_movies()
-        stop_words = load_stop_words()
-        ps = PorterStemmer()
-    except Exception as e:
-        raise MovieSearchError("Initialization failed") from e
+    idx = InvertedIndex()
+    idx.load()
 
-    results = []
+    seen, res = set(), []
     query_tokens = tokenize(query)
 
-    for movie in data:
-        try:
-            raw_title = movie["title"]
-            clean_title = normalize(raw_title)
+    for token in query_tokens:
+        matching_doc_ids = idx.get_documents(token)
 
-            if token_matching(query_tokens, clean_title, stop_words, ps):
-                results.append(raw_title)
-        except Exception as e:
-            raise MovieSearchError("Error while processing movie entry") from e
-    return results
+        for match_id in matching_doc_ids:
+            if match_id in seen:
+                continue
+
+            seen.add(match_id)
+            matching_doc = idx.docmap[match_id]['title']
+            res.append(matching_doc)
+
+            if len(res) >= 5:
+                return res
+
+    return res
+
+
