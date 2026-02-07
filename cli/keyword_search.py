@@ -1,8 +1,7 @@
 from search_utils import load_movies, load_stop_words
 import string
-from typing import List
+from typing import List, Optional
 from nltk.stem import PorterStemmer
-from inverted_index import InvertedIndex
 
 class MovieSearchError(Exception):
     """Base exception for movie search errors."""
@@ -28,6 +27,7 @@ def token_matching(query_tokens: List[str], title: str, stop_words: list, stemme
 
 
 def search_movies_kw(query: str) -> List[str]:
+    from inverted_index import InvertedIndex
     idx = InvertedIndex()
     idx.load()
 
@@ -51,3 +51,14 @@ def search_movies_kw(query: str) -> List[str]:
     return res
 
 
+def get_bm25_idf(term: str) -> float:
+    from inverted_index import InvertedIndex
+    idx = InvertedIndex()
+    idx.load()
+    return idx.get_bm25_id(term)
+
+def get_bm25_tf(document_id: str, term: str, k1: float = 1.5, b: float = 0.75) -> float:
+    from inverted_index import InvertedIndex
+    idx = InvertedIndex()
+    idx.load()
+    return idx.get_bm25_tf(document_id, term, k1=k1, b=b)
