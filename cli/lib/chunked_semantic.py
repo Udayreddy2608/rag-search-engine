@@ -104,8 +104,10 @@ class ChunkedSemanticSearch(SemanticSearch):
                 if score['move_idx'] not in movie_idx_scores or score['score'] > movie_idx_scores[score['move_idx']]['score']:
                     movie_idx_scores[score['move_idx']] = score
             
-            chunk_scores.sort(key=lambda x: x["score"], reverse=True)
-            top_chunks = chunk_scores[:limit]
+            # Use movie_idx_scores to ensure only one chunk per movie (the best one)
+            unique_movie_scores = list(movie_idx_scores.values())
+            unique_movie_scores.sort(key=lambda x: x["score"], reverse=True)
+            top_chunks = unique_movie_scores[:limit]
             results = []
             for chunk in top_chunks:
                 document = self.document_map[chunk['move_idx']]
