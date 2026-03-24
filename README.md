@@ -1,5 +1,4 @@
-# RAG Search Engine
-
+# RAG Search Engine - Not VIBE CODED
 A Python-based search engine implementing both **keyword-based** and **semantic search** capabilities using inverted indexing, BM25 ranking, and transformer-based embeddings.
 
 ## 🚀 Features
